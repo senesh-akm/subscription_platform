@@ -11,5 +11,8 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/websites', [WebsiteController::class, 'store']);
+Route::get('/websites', [WebsiteController::class, 'index']);
+
 Route::post('/posts', [PostController::class, 'store']);
+
 Route::post('/subscriptions', [SubscriptionController::class, 'store']);
