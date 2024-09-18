@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\PostController;
-use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\WebsiteController;
 use Illuminate\Http\Request;
@@ -11,7 +10,6 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/subscribers', [SubscriberController::class, 'store']);
 Route::post('/websites', [WebsiteController::class, 'store']);
 Route::post('/posts', [PostController::class, 'store']);
 Route::post('/subscriptions', [SubscriptionController::class, 'store']);
