@@ -17,17 +17,16 @@ class PostTest extends TestCase
         $website = Website::factory()->create();
 
         $response = $this->postJson('/api/posts', [
-            'website_id' => $website->id,
             'title' => 'New Post',
-            'description' => 'This is a new post description.'
+            'description' => 'This is a new post.',
+            'website_id' => $website->id
         ]);
 
         $response->assertStatus(201);
-
         $this->assertDatabaseHas('posts', [
-            'website_id' => $website->id,
             'title' => 'New Post',
-            'description' => 'This is a new post description.'
+            'description' => 'This is a new post.',
+            'website_id' => $website->id
         ]);
     }
 }
