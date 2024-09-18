@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class WebsiteController extends Controller
 {
+    public function index()
+    {
+        $websites = Website::all();
+        return response()->json($websites, 200); // Ensure status 200 for retrieval
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -16,6 +22,6 @@ class WebsiteController extends Controller
 
         $website = Website::create($request->all());
 
-        return response()->json($website, 201);
+        return response()->json($website, 201); // Ensure status 201 for creation
     }
 }
