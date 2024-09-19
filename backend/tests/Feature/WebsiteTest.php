@@ -14,6 +14,8 @@ class WebsiteTest extends TestCase
     /** @test */
     public function retrive_all_websites()
     {
+        $this->withoutExceptionHandling();
+        
         // Create a few websites in the database
         $websites = Website::factory()->count(3)->create();
 
@@ -36,6 +38,8 @@ class WebsiteTest extends TestCase
     /** @test */
     public function it_creates_a_website()
     {
+        $this->withoutExceptionHandling();
+        
         $response = $this->postJson('/api/websites', [
             'name' => 'Tech Blog',
             'url' => 'https://techblog.com'

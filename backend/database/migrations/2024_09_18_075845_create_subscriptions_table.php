@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('website_id')->constrained('websites')->onDelete('cascade');
             $table->string('email');
-            $table->foreignId('website_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

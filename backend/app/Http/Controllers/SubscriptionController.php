@@ -2,32 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SubscriptionController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
+        // Validate the incoming request
+        $data = $request->validate([
             'email' => 'required|email',
             'website_id' => 'required|exists:websites,id',
         ]);
 
-        // Check if the subscription already exists
-        $subscriptionExists = Subscription::where('email', $request->email)
-            ->where('website_id', $request->website_id)
-            ->exists();
+        // Check if the user is already subscribed
+        $exists = DB::table('subscriptions')
+                    ->where('email', $data['email'])
+                    ->where('website_id', $data['website_id'])
+                    ->exists();
 
-        if ($subscriptionExists) {
+        if ($exists) {
             return response()->json(['message' => 'Already subscribed'], 409);
         }
 
-        $subscription = Subscription::create([
-            'email' => $request->email,
-            'website_id' => $request->website_id,
+        // Insert the subscription directly into the subscriptions table
+        DB::table('subscriptions')->insert([
+            'email' => $data['email'],
+            'website_id' => $data['website_id'],
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
-        return response()->json($subscription, 201);
+        return response()->json(['message' => 'Subscription created successfully'], 201);
     }
 }

@@ -15,6 +15,8 @@ class SubscriptionTest extends TestCase
     /** @test */
     public function it_allows_a_user_to_subscribe_to_a_website()
     {
+        $this->withoutExceptionHandling();
+
         // Create a website
         $website = Website::factory()->create();
 
@@ -37,6 +39,8 @@ class SubscriptionTest extends TestCase
     /** @test */
     public function it_does_not_allow_duplicate_subscriptions()
     {
+        $this->withoutExceptionHandling();
+        
         // Create a website
         $website = Website::factory()->create();
 
