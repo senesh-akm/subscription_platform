@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
-import CreateWebsite from './components/CreateWebsite';
-import WebsiteList from './components/WebsiteList';
+import WebsiteForm from './components/Websites/WebsiteForm';
+import WebsiteList from './components/Websites/WebsiteList';
 
 const App = () => {
   const [websites, setWebsites] = useState([]);
@@ -12,7 +12,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <CreateWebsite onWebsiteCreated={handleWebsiteCreated} />
+      <WebsiteForm onWebsiteCreated={handleWebsiteCreated} />
       <WebsiteList websites={websites} />
     </div>
   );

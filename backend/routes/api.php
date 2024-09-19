@@ -13,6 +13,6 @@ Route::get('/user', function (Request $request) {
 Route::post('/websites', [WebsiteController::class, 'store']);
 Route::get('/websites', [WebsiteController::class, 'index']);
 
-Route::post('/posts', [PostController::class, 'store']);
+Route::post('/websites/{website}/posts', [PostController::class, 'store']);
 
 Route::post('/subscriptions', [SubscriptionController::class, 'store']);

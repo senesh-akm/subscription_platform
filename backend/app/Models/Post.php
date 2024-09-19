@@ -9,9 +9,15 @@ class Post extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'website_id',
-        'title',
-        'description',
-    ];
+    protected $fillable = ['title', 'description', 'website_id'];
+
+    public function website()
+    {
+        return $this->belongsTo(Website::class);
+    }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class); // Adjust this if your relationship is different
+    }
 }

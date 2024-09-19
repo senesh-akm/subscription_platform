@@ -2,24 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
+use App\Jobs\NotifySubscribersJob;
+use App\Models\Website;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, Website $website)
     {
-        $request->validate([
-            'website_id' => 'required|exists:websites,id',
+        // Validate incoming request data
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
 
-        $post = Post::create($request->all());
+        // Create a new post using the website's relationship
+        $post = $website->posts()->create([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+        ]);
 
-        // Dispatch a job to send emails to subscribers (this job will be created later)
-        // dispatch(new SendPostNotification($post));
+        // Dispatch a job to notify subscribers
+        dispatch(new NotifySubscribersJob($post));
 
-        return response()->json($post, 201);
+        // Return a success response
+        return response()->json([
+            'message' => 'Post created successfully and subscribers notified.'
+        ], 201);
     }
 }
