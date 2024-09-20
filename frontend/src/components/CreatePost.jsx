@@ -13,7 +13,7 @@ const CreatePost = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`http://127.0.0.1:8000/api/websites/${websiteId}/posts/create`, {
+      const response = await axios.post(`http://127.0.0.1:8000/api/websites/${websiteId}/posts`, {
         title,
         description,
       });
