@@ -15,11 +15,15 @@ class PostTest extends TestCase
     /** @test */
     public function test_index_returns_all_posts()
     {
-        // Create some posts
-        Post::factory()->count(3)->create();
+        // Disable exception handling to better diagnose issues during testing
+        $this->withoutExceptionHandling();
+        
+        // Create a website and associate posts
+        $website = Website::factory()->create();
+        Post::factory()->count(3)->create(['website_id' => $website->id]);
 
         // Make a GET request to the correct index route
-        $response = $this->getJson('/api/websites/posts'); // Updated route
+        $response = $this->getJson("/api/websites/{$website->id}/posts");
 
         // Assert the response status is 200 (OK)
         $response->assertStatus(200);

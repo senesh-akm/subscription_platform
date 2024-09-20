@@ -15,6 +15,16 @@ class SubscriptionController extends Controller
             'email' => 'required|email',
         ]);
 
+        // Check if subscription already exists
+        $subscriptionExists = Subscription::where([
+            ['website_id', $validated['website_id']],
+            ['email', $validated['email']]
+        ])->exists();
+
+        if ($subscriptionExists) {
+            return response()->json(['message' => 'Already subscribed'], 409);
+        }
+
         // Create the subscription
         Subscription::create([
             'website_id' => $validated['website_id'],
@@ -22,8 +32,6 @@ class SubscriptionController extends Controller
         ]);
 
         // Return a success response
-        return response()->json([
-            'message' => 'Subscribed successfully.'
-        ], 201);
+        return response()->json(['message' => 'Subscribed successfully.'], 201);
     }
 }
