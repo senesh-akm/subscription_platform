@@ -39,4 +39,21 @@ class PostController extends Controller
             'message' => 'Post created successfully and subscribers notified.'
         ], 201);
     }
+
+    public function show($websiteId, $postId)
+    {
+        $website = Website::find($websiteId);
+
+        if (!$website) {
+            return response()->json(['message' => 'Website not found'], 404);
+        }
+
+        $post = Post::where('website_id', $websiteId)->find($postId);
+
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        return response()->json($post, 200);
+    }
 }

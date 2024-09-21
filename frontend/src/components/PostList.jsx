@@ -29,13 +29,20 @@ const PostList = () => {
     return (
         <div className="container">
             <h2 className="pt-5">Posts for Website {websiteId}</h2>
-            <Link to={`/websites/${websiteId}/posts/create`} className="btn btn-primary mb-3">Create New Post</Link>
+            <div className="mb-3">
+                <Link to={`/websites/${websiteId}/posts/create`} className="btn btn-primary me-2">Create New Post</Link>
+                <Link to={`/`} className="btn btn-secondary">Back to Posts</Link>
+            </div>
             {posts.length > 0 ? (
                 <ul className="list-group">
                     {posts.map((post) => (
                         <li key={post.id} className="list-group-item">
-                            <h5>{post.title}</h5>
-                            <p>{post.description}</p>
+                            <h5>
+                                <Link to={`/websites/${websiteId}/posts/${post.id}`}>
+                                    {post.title}
+                                </Link>
+                            </h5>
+                            <p className="text-truncate">{post.description}</p>
                         </li>
                     ))}
                 </ul>

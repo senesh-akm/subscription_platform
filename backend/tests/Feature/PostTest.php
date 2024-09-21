@@ -17,7 +17,7 @@ class PostTest extends TestCase
     {
         // Disable exception handling to better diagnose issues during testing
         $this->withoutExceptionHandling();
-        
+
         // Create a website and associate posts
         $website = Website::factory()->create();
         Post::factory()->count(3)->create(['website_id' => $website->id]);
@@ -56,5 +56,17 @@ class PostTest extends TestCase
             'description' => 'This is a description for the new post.',
             'website_id' => $website->id,
         ]);
+    }
+
+    /** @test */
+    public function it_fetches_a_single_post_for_a_website()
+    {
+        $website = Website::factory()->create();
+        $post = Post::factory()->create(['website_id' => $website->id]);
+
+        $response = $this->getJson("/api/websites/{$website->id}/posts/{$post->id}");
+
+        $response->assertStatus(200);
+        $response->assertJson($post->toArray());
     }
 }

@@ -15,5 +15,6 @@ Route::get('/websites', [WebsiteController::class, 'index']);
 
 Route::post('/websites/{website}/posts', [PostController::class, 'store']);
 Route::get('/websites/{website}/posts', [PostController::class, 'index']);
+Route::get('/websites/{websiteId}/posts/{postId}', [PostController::class, 'show']);
 
 Route::post('/subscriptions', [SubscriptionController::class, 'store']);
