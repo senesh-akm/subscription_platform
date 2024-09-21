@@ -4,8 +4,9 @@ import TopNavbar from './components/navbar/TopNavbar';
 import BottomNavbar from './components/navbar/BottomNavbar';
 import Dashboard from './components/Dashboard';
 import WebsiteForm from './components/WebsiteForm';
-import CreatePost from "./components/CreatePost";
-import PostList from "./components/PostList";
+import CreatePost from './components/CreatePost';
+import PostList from './components/PostList';
+import ViewPost from './components/ViewPost';
 
 const App = () => {
     return (
@@ -17,6 +18,7 @@ const App = () => {
                     <Route path="/create-website" element={<WebsiteForm />} />
                     <Route path="/websites/:websiteId/posts" element={<PostList />} />
                     <Route path="/websites/:websiteId/posts/create" element={<CreatePost />} />
+                    <Route path="/websites/:websiteId/posts/:postId" element={<ViewPost />} />
                 </Routes>
             </div>
             <BottomNavbar />
