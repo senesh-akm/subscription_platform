@@ -4,9 +4,9 @@ import TopNavbar from './components/navbar/TopNavbar';
 import BottomNavbar from './components/navbar/BottomNavbar';
 import Dashboard from './components/Dashboard';
 import WebsiteForm from './components/WebsiteForm';
-import CreatePost from './components/CreatePost';
-import PostList from './components/PostList';
-import ViewPost from './components/ViewPost';
+import CreatePost from './components/posts/CreatePost';
+import PostList from './components/posts/PostList';
+import ViewPost from './components/posts/ViewPost';
 
 const App = () => {
     return (
