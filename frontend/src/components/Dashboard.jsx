@@ -56,7 +56,7 @@ const Dashboard = () => {
                             <div className="card-body d-flex justify-content-between">
                                 <div>
                                     <h5
-                                        className="card-title text-primary"
+                                        className="card-title text-primary text-black"
                                         style={{ cursor: 'pointer' }}
                                         onClick={() => handleWebsiteClick(website.id)}
                                     >
