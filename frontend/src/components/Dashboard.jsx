@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
     const [websites, setWebsites] = useState([]);
-    const [email, setEmail] = useState('');
+    const [emails, setEmails] = useState({});
     const [message, setMessage] = useState('');  // For feedback after subscribing
     const navigate = useNavigate();  // For navigation to PostList
 
@@ -24,15 +24,20 @@ const Dashboard = () => {
 
     const handleSubscribe = async (websiteId) => {
         try {
-            // Make the POST request to subscribe with websiteId and email
+            // Make the POST request to subscribe with websiteId and the respective email
             await axios.post('http://127.0.0.1:8000/api/subscriptions', {
                 website_id: websiteId,
-                email: email,
+                email: emails[websiteId], // Use the email specific to the website
             });
 
             // Provide feedback to the user
             setMessage(`Subscribed successfully to website ${websiteId}`);
-            setEmail(''); // Clear the email field after subscribing
+            
+            // Clear the email field for the website after subscribing
+            setEmails((prevEmails) => ({
+                ...prevEmails,
+                [websiteId]: '',
+            }));
         } catch (error) {
             console.error('Error subscribing:', error);
             setMessage('An error occurred while subscribing.');
@@ -44,49 +49,77 @@ const Dashboard = () => {
         navigate(`/websites/${websiteId}/posts`);
     };
 
+    const handleEmailChange = (e, websiteId) => {
+        // Update the email for the respective website
+        const { value } = e.target;
+        setEmails((prevEmails) => ({
+            ...prevEmails,
+            [websiteId]: value,
+        }));
+    };
+
+    // Set a timeout to clear the message after 5 seconds
+    useEffect(() => {
+        if (message) {
+            const timer = setTimeout(() => {
+                setMessage('');  // Clear the message
+            }, 5000);
+
+            // Cleanup function to clear the timeout if the component is unmounted or if the message changes
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
+
     return (
-        <div className="container">
-            <h2 className="pt-5">Dashboard</h2>
-            <Link to="/create-website" className="btn btn-primary mb-3">Create New Website</Link>
-            {message && <div className="alert alert-info">{message}</div>}
-            <div className="row">
+        <div className="container mt-5">
+            <h2 className="mb-4 text-center text-info">Website Dashboard</h2>
+            <div className="d-flex justify-content-between mb-4">
+                <Link to="/create-website" className="btn btn-success">Create New Website</Link>
+            </div>
+            {message && <div className="alert alert-info w-100 text-center">{message}</div>}
+
+            <div className="list-group">
                 {websites.map((website) => (
-                    <div className="mb-4" key={website.id}>
-                        <div className="card">
-                            <div className="card-body d-flex justify-content-between">
-                                <div>
-                                    <h5
-                                        className="card-title text-primary text-black"
-                                        style={{ cursor: 'pointer' }}
-                                        onClick={() => handleWebsiteClick(website.id)}
+                    <div className="list-group-item mb-3 p-4 shadow-sm border-0" key={website.id}>
+                        <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5
+                                    className="text-primary mb-2"
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => handleWebsiteClick(website.id)}
+                                >
+                                    {website.name}
+                                </h5>
+                                <p
+                                    className="text-muted mb-0"
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => handleWebsiteClick(website.id)}
+                                >
+                                    {website.url}
+                                </p>
+                            </div>
+                    
+                            <div className="d-flex flex-column w-auto">  {/* Wrapping input-group and count */}
+                                <div className="input-group">
+                                    <input
+                                        type="email"
+                                        className="form-control"
+                                        placeholder="Enter your email"
+                                        value={emails[website.id] || ''} // Use email specific to this website
+                                        onChange={(e) => handleEmailChange(e, website.id)}
+                                    />
+                                    <button
+                                        className="btn btn-outline-primary"
+                                        onClick={() => handleSubscribe(website.id)}
                                     >
-                                        {website.name}
-                                    </h5>
-                                    <p
-                                        className="card-text text-primary"
-                                        style={{ cursor: 'pointer' }}
-                                        onClick={() => handleWebsiteClick(website.id)}
-                                    >
-                                        {website.url}
-                                    </p>
+                                        Subscribe
+                                    </button>
                                 </div>
-                                <div>
-                                    <div className="d-flex">
-                                        <input
-                                            type="email"
-                                            className="form-control me-2"
-                                            placeholder="Enter your email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                        />
-                                        <button
-                                            className="btn btn-primary"
-                                            onClick={() => handleSubscribe(website.id)}
-                                        >
-                                            Subscribe
-                                        </button>
-                                    </div>
-                                </div>
+                    
+                                {/* Subscription count aligned below the input-group */}
+                                <p className="text-muted mt-2 text-end mb-1"> {/* Align right if needed */}
+                                    {website.subscriptions_count || 0} subscribers
+                                </p>
                             </div>
                         </div>
                     </div>
