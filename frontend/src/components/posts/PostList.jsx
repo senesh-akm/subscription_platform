@@ -24,18 +24,18 @@ const PostList = () => {
     }, [websiteId]);
 
     if (loading) {
-        return <div>Loading posts...</div>;
+        return <div className="text-center mt-5">Loading posts...</div>;
     }
 
     return (
-        <div className="container">
-            <h2 className="pt-5 mb-3">Posts for Website {websiteId}</h2>
+        <div className="container mt-5">
+            <h2 className="mb-4 text-center">Posts for Website</h2>
 
             {/* Create row with flex utilities */}
             <div className="d-flex justify-content-between mb-3">
                 {/* Left-aligned buttons */}
                 <div>
-                    <Link to={`/websites/${websiteId}/posts/create`} className="btn btn-primary me-2">Create New Post</Link>
+                    <Link to={`/websites/${websiteId}/posts/create`} className="btn btn-success me-2">Create New Post</Link>
                     <Link to={`/`} className="btn btn-secondary">Back to Posts</Link>
                 </div>
 
@@ -67,7 +67,9 @@ const PostList = () => {
                     ))}
                 </div>
             ) : (
-                <p>No posts available for this website.</p>
+                <div className="text-center">
+                    <p>No posts available for this website.</p>
+                </div>
             )}
         </div>
     );
