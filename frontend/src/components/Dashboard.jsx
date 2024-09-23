@@ -31,7 +31,7 @@ const Dashboard = () => {
             });
 
             // Provide feedback to the user
-            setMessage(`Subscribed successfully to website ${websiteId}`);
+            setMessage(`Subscribed successfully to website`);
             
             // Clear the email field for the website after subscribing
             setEmails((prevEmails) => ({

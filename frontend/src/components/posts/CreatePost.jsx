@@ -20,7 +20,7 @@ const CreatePost = () => {
       setMessage(response.data.message);
       setTitle("");
       setDescription("");
-
+      navigate('/');
       // Navigate to the PostList component after successful post creation
       navigate(`/websites/${websiteId}/posts`); // Redirects to the post list for that website
     } catch (error) {

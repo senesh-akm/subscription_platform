@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Mail\PostNotification;
 use App\Models\Post;
+use App\Models\Subscription;
 use App\Models\Website;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class PostTest extends TestCase
@@ -38,24 +41,48 @@ class PostTest extends TestCase
         // Disable exception handling to better diagnose issues during testing
         $this->withoutExceptionHandling();
 
-        // Create a website instance
+        // Fake the mail to intercept email sending
+        Mail::fake();
+
+        // Create a website and subscribers
         $website = Website::factory()->create();
+        $subscriber1 = Subscription::factory()->create(['website_id' => $website->id]);
+        $subscriber2 = Subscription::factory()->create(['website_id' => $website->id]);
 
-        // Send the request to create a post for the website
-        $response = $this->postJson("/api/websites/{$website->id}/posts", [
-            'title' => 'New Post Title',
-            'description' => 'This is a description for the new post.',
-        ]);
+        // Prepare post data
+        $postData = [
+            'title' => 'Test Post Title',
+            'description' => 'Test Post Description',
+        ];
 
-        // Assert the response status is 201 (Created)
+        // Send a POST request to create a new post
+        $response = $this->postJson("/api/websites/{$website->id}/posts", $postData);
+
+        // Assert the response status is correct
         $response->assertStatus(201);
+        $response->assertJson(['message' => 'Post created and notifications sent!']);
 
-        // Assert that the post exists in the database with the correct values
+        // Check that the post was created in the database
         $this->assertDatabaseHas('posts', [
-            'title' => 'New Post Title',
-            'description' => 'This is a description for the new post.',
+            'title' => $postData['title'],
+            'description' => $postData['description'],
             'website_id' => $website->id,
         ]);
+
+        // Retrieve the created post
+        $post = Post::where('title', 'Test Post Title')->first();
+
+        // Assert that emails were sent to both subscribers
+        Mail::assertSent(PostNotification::class, function ($mail) use ($post, $subscriber1) {
+            return $mail->hasTo($subscriber1->email) && $mail->post->id === $post->id;
+        });
+
+        Mail::assertSent(PostNotification::class, function ($mail) use ($post, $subscriber2) {
+            return $mail->hasTo($subscriber2->email) && $mail->post->id === $post->id;
+        });
+
+        // Ensure the exact number of emails sent equals the number of subscribers
+        Mail::assertSent(PostNotification::class, 2);
     }
 
     /** @test */
