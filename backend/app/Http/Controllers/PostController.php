@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\NotifySubscribersJob;
+use App\Mail\PostNotification;
 use App\Models\Post;
+use App\Models\Subscription;
 use App\Models\Website;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class PostController extends Controller
 {
@@ -19,25 +21,25 @@ class PostController extends Controller
 
     public function store(Request $request, Website $website)
     {
-        // Validate incoming request data
-        $validated = $request->validate([
+        // Validate and create post (same as above)
+        $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
 
-        // Create a new post using the website's relationship
-        $post = $website->posts()->create([
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-        ]);
+        $post = new Post();
+        $post->title = $request->input('title');
+        $post->description = $request->input('description');
+        $post->website_id = $website->id;
+        $post->save();
 
-        // Dispatch a job to notify subscribers
-        dispatch(new NotifySubscribersJob($post));
+        // Send email to all subscribers of the website
+        $subscribers = Subscription::where('website_id', $website->id)->get();
+        foreach ($subscribers as $subscriber) {
+            Mail::to($subscriber->email)->send(new PostNotification($post));
+        }
 
-        // Return a success response
-        return response()->json([
-            'message' => 'Post created successfully and subscribers notified.'
-        ], 201);
+        return response()->json(['message' => 'Post created and notifications sent!'], 201);
     }
 
     public function show($websiteId, $postId)
