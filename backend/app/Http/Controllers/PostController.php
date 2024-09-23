@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\NotifySubscribersJob;
 use App\Models\Post;
 use App\Models\Website;
 use Illuminate\Http\Request;
@@ -30,9 +29,6 @@ class PostController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'],
         ]);
-
-        // Dispatch a job to notify subscribers
-        dispatch(new NotifySubscribersJob($post));
 
         // Return a success response
         return response()->json([
