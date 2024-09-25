@@ -2,26 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Application\UseCases\Website\CreateWebsite;
+use App\Application\UseCases\Website\GetAllWebsites;
 use App\Models\Website;
 use Illuminate\Http\Request;
 
 class WebsiteController extends Controller
 {
+    private CreateWebsite $createWebsite;
+    private GetAllWebsites $getAllWebsites;
+
+    public function __construct(CreateWebsite $createWebsite, GetAllWebsites $getAllWebsites)
+    {
+        $this->createWebsite = $createWebsite;
+        $this->getAllWebsites = $getAllWebsites;
+    }
+
     public function index()
     {
-        $websites = Website::all();
-        return response()->json($websites, 200); // Ensure status 200 for retrieval
+        $websites = $this->getAllWebsites->execute();
+        return response()->json($websites);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'url' => 'required|url|unique:websites,url',
+            'url' => 'required|url|max:255',
         ]);
 
-        $website = Website::create($request->all());
+        $website = $this->createWebsite->execute($validated['name'], $validated['url']);
 
-        return response()->json($website, 201); // Ensure status 201 for creation
+        return response()->json($website, 201);
     }
 }
