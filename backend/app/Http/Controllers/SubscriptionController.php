@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Subscription;
+use App\Application\UseCases\Subscription\CreateSubscription;
+use Exception;
 use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
 {
+    private CreateSubscription $createSubscription;
+
+    public function __construct(CreateSubscription $createSubscription)
+    {
+        $this->createSubscription =$createSubscription;
+    }
+
     public function store(Request $request)
     {
         // Validate request
@@ -15,23 +23,15 @@ class SubscriptionController extends Controller
             'email' => 'required|email',
         ]);
 
-        // Check if subscription already exists
-        $subscriptionExists = Subscription::where([
-            ['website_id', $validated['website_id']],
-            ['email', $validated['email']]
-        ])->exists();
+        try {
+            // Execute the use case
+            $this->createSubscription->execute($validated['website_id'], $validated['email']);
 
-        if ($subscriptionExists) {
-            return response()->json(['message' => 'Already subscribed'], 409);
+            // Return a success response
+            return response()->json(['message' => 'Subscribed successfully.'], 201);
+        } catch (Exception $e) {
+            // Handle the 'Already subscribed' case or any other error
+            return response()->json(['message' => $e->getMessage()], 409);
         }
-
-        // Create the subscription
-        Subscription::create([
-            'website_id' => $validated['website_id'],
-            'email' => $validated['email'],
-        ]);
-
-        // Return a success response
-        return response()->json(['message' => 'Subscribed successfully.'], 201);
     }
 }
