@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Application\UseCases\Post\CreatePost;
 use App\Mail\PostNotification;
 use App\Models\Post;
 use App\Models\Subscription;
@@ -11,6 +12,13 @@ use Illuminate\Support\Facades\Mail;
 
 class PostController extends Controller
 {
+    private CreatePost $createPost;
+
+    public function __construct(CreatePost $createPost)
+    {
+        $this->createPost = $createPost;
+    }
+
     public function index($websiteId)
     {
         // Fetch posts for the specific websiteId
@@ -21,23 +29,18 @@ class PostController extends Controller
 
     public function store(Request $request, Website $website)
     {
-        // Validate and create post (same as above)
-        $request->validate([
+        // Validate input
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
 
-        $post = new Post();
-        $post->title = $request->input('title');
-        $post->description = $request->input('description');
-        $post->website_id = $website->id;
-        $post->save();
-
-        // Send email to all subscribers of the website
-        $subscribers = Subscription::where('website_id', $website->id)->get();
-        foreach ($subscribers as $subscriber) {
-            Mail::to($subscriber->email)->send(new PostNotification($post));
-        }
+        // Execute the use case
+        $this->createPost->execute(
+            $validated['title'],
+            $validated['description'],
+            $website->id
+        );
 
         return response()->json(['message' => 'Post created and notifications sent!'], 201);
     }

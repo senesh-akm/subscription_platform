@@ -21,4 +21,13 @@ class SubscriptionRepository
             'email' => $subscription->getEmail(),
         ]);
     }
+
+    public function getByWebsiteId(int $websiteId): array
+    {
+        $subscriptions = EloquentSubscription::where('website_id', $websiteId)->get();
+
+        return $subscriptions->map(function ($subscription) {
+            return new Subscription($subscription->website_id, $subscription->email);
+        })->toArray();
+    }
 }
