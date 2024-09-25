@@ -7,15 +7,15 @@ use App\Models\Post;
 use App\Models\Subscription;
 use App\Models\Website;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Mail;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class PostTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function test_index_returns_all_posts()
     {
         // Disable exception handling to better diagnose issues during testing
@@ -35,7 +35,7 @@ class PostTest extends TestCase
         $response->assertJsonCount(3);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_a_post_for_a_website()
     {
         // Disable exception handling to better diagnose issues during testing
@@ -85,7 +85,7 @@ class PostTest extends TestCase
         Mail::assertSent(PostNotification::class, 2);
     }
 
-    /** @test */
+    #[Test]
     public function it_fetches_a_single_post_for_a_website()
     {
         $website = Website::factory()->create();
